@@ -16,3 +16,7 @@ composer install --ignore-platform-reqs
 ./vendor/bin/sail up -d
 ```
 
+Старт на сервере:
+```
+./vendor/bin/sail -f docker-compose-server.yml up -d
+```
