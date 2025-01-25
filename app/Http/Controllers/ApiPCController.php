@@ -6,7 +6,6 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Spatie\Ssh\Ssh;
 
 class ApiPCController extends Controller
 {
@@ -26,23 +25,24 @@ class ApiPCController extends Controller
 
     public function disable(): JsonResponse
     {
-//        $ssh = Ssh::create(config('ssh.user'), config('ssh.host'))
-//            ->usePassword(config('ssh.password'));
-//
-////        $command = 'echo '.config('ssh.password').' | sudo -S poweroff';
-////        $command = 'echo 1';
-//        $command = 'mkdir test';
-//        $process = $ssh->execute($command);
+        try {
+            $connection = ssh2_connect(config('ssh.host'));
+            if(!$connection){
+                throw new \Exception('Connection to SSH failed');
+            }
+            if(!ssh2_auth_password($connection, config('ssh.user'), config('ssh.password'))){
+                throw new \Exception('Password authentication failed');
+            }
 
-//        $connection = ssh2_connect('shell.example.com', 22);
-//        ssh2_auth_password($connection, 'username', 'password');
-//
-//        $stream = ssh2_exec($connection, '/usr/local/bin/php -i');
+            $stream = ssh2_exec($connection, 'echo "'.config('ssh.password').'" | sudo -S poweroff');
 
-//        return response()->json([
-//            'message' => $process->getErrorOutput(),
-//            'code' => $process->getExitCode(),
-//        ], $process->isSuccessful() ? 200 : 500);
-        return response()->json();
+            return response()->json([
+                'message' => stream_get_contents($stream),
+            ]);
+        } catch (\Exception $exception){
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
     }
 }
