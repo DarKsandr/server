@@ -34,10 +34,10 @@ class ApiPCController extends Controller
                 throw new \Exception('Password authentication failed');
             }
 
-            $stream = ssh2_exec($connection, 'echo "'.config('ssh.password').'" | sudo -S poweroff');
+            ssh2_exec($connection, 'echo "'.config('ssh.password').'" | sudo -S poweroff');
 
             return response()->json([
-                'message' => stream_get_contents($stream),
+                'message' => '',
             ]);
         } catch (\Exception $exception){
             return response()->json([
