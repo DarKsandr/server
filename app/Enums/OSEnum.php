@@ -17,7 +17,7 @@ enum OSEnum
     {
         try {
             $result = SshService::exec($connect, 'uname');
-            if($result === 'Linux'){
+            if($result === 'Linux' . PHP_EOL){
                 return self::LINUX;
             }
         } catch (\Exception $e) {}
