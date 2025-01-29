@@ -12,6 +12,11 @@ laravelsail/php84-composer:latest \
 composer install --ignore-platform-reqs
 ```
 
+Загрузка обновлений на сервер:
+```
+git fetch && git reset --hard origin/main
+```
+
 # Запуск
 ```
 ./vendor/bin/sail up -d
