@@ -7,20 +7,20 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 
-enum StatusEnum: int
+enum StatusEnum: string
 {
-    case ENABLE = 1;
-    case DISABLE = 0;
+    case ON = '1';
+    case OFF = '0';
 
     public function change(): JsonResponse
     {
         return match ($this){
-            self::ENABLE => $this->enable(),
-            self::DISABLE => $this->disable(),
+            self::ON => $this->on(),
+            self::OFF => $this->off(),
         };
     }
 
-    private function enable(): JsonResponse
+    private function on(): JsonResponse
     {
         /**
          * @var PendingRequest $http
@@ -32,23 +32,18 @@ enum StatusEnum: int
         return response()->json($response->json(), $response->status());
     }
 
-    private function disable(): JsonResponse
+    private function off(): JsonResponse
     {
         try {
             $connect = SshService::connect();
 
-            $stream = ssh2_exec($connect, 'echo "'.config('ssh.password').'" | sudo -S poweroff');
+            $os = OSEnum::checkOS($connect);
+            $os->off($connect);
 
-            $sio_stream  = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
-            stream_set_blocking($sio_stream , true);
-            $result_dio = stream_get_contents($sio_stream);
-
-            return response()->json([
-                'message' => $result_dio,
-            ]);
+            return response()->json();
         } catch (\Exception $exception){
             return response()->json([
-                'message' => $exception->getMessage(),
+                'error' => $exception->getMessage(),
             ], 500);
         }
     }
