@@ -20,7 +20,9 @@ class ApiPCController extends Controller
 
     public function check(): JsonResponse
     {
+        $originalConnectionTimeout = ini_get('default_socket_timeout');
         try {
+            ini_set('default_socket_timeout', 2);
             $this->sshService->connect();
 
             return response()->json([
@@ -30,6 +32,8 @@ class ApiPCController extends Controller
             return response()->json([
                 'value' => false,
             ]);
+        } finally {
+            ini_set('default_socket_timeout', $originalConnectionTimeout);
         }
     }
 }
