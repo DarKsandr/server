@@ -1,5 +1,6 @@
 # О проекте
 Доамашний сервер для "Домовёнок Кузя"
+
 # Установка
 Первоначальная установка composer:
 ```
@@ -11,12 +12,12 @@ laravelsail/php84-composer:latest \
 composer install --ignore-platform-reqs
 ```
 
-Запуск:
+# Запуск
 ```
 ./vendor/bin/sail up -d
 ```
 
-Старт на сервере:
+# Старт на сервере
 ```
 ./vendor/bin/sail -f docker-compose-server.yml up -d
 ```
